@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 class Example(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
@@ -8,8 +7,8 @@ class Example(tk.Frame):
         self.sidebar = tk.Frame(self, bg="#030005", width=100)
         self.sidebar.pack(side="left", fill="y")
 
-        self.separator = tk.Frame(self, bg="#1D1D1D", width=2)
-        self.separator.pack(side="left", fill="y")
+        self.divider = tk.Frame(self, bg="#1D1D1D", width=2)
+        self.divider.pack(side="left", fill="y")
 
         # Keep sidebar width fixed
         self.sidebar.pack_propagate(False)
@@ -17,43 +16,60 @@ class Example(tk.Frame):
         # Sidebar title
         tk.Label(
             self.sidebar,
-            text="Menu",
-            bg="#111111",
+            text="☰ Menu",
+            bg="#030005",
             fg="#E6E6E6",
             font=("Segoe UI", 16, "bold")
         ).pack(pady=20)
 
-        # Example buttons
         tk.Button(
             self.sidebar,
-            text="Dashboard",
+            text="📊 Dashboard",
+            font=("Segoe UI Emoji", 9),
             bg="#1A1A1A",
             fg="white",
             relief="flat"
-        ).pack(fill="x", padx=15, pady=5)
+        ).pack(fill="x", pady=5)
 
         tk.Button(
             self.sidebar,
-            text="Subjects",
+            text="📅 Timetable",
+            font=("Segoe UI Emoji", 9),
             bg="#1A1A1A",
             fg="white",
             relief="flat"
-        ).pack(fill="x", padx=15, pady=5)
+        ).pack(fill="x", pady=5)
 
         tk.Button(
             self.sidebar,
-            text="Settings",
+            text="📈 Progress",
+            font=("Segoe UI Emoji", 9),
             bg="#1A1A1A",
             fg="white",
             relief="flat"
-        ).pack(fill="x", padx=15, pady=5)
+        ).pack(fill="x", pady=5)
+
+        tk.Button(
+            self.sidebar,
+            text="🎯 Goals",
+            font=("Segoe UI Emoji", 9),
+            bg="#1A1A1A",
+            fg="white",
+            relief="flat"
+        ).pack(fill="x", pady=5)
+
+        tk.Button(
+            self.sidebar,
+            text="⚙ Settings",
+            font=("Segoe UI Emoji", 9),
+            bg="#1A1A1A",
+            fg="white",
+            relief="flat"
+        ).pack(fill="x", pady=5)
 
         # Main content area
         self.main = GradientFrame(self, borderwidth=0, highlightthickness=0)
         self.main.pack(side="left", fill="both", expand=True)
-
-
-
 
 class GradientFrame(tk.Canvas):
     # A gradient frame which uses a canvas to draw the background
@@ -90,8 +106,8 @@ class GradientFrame(tk.Canvas):
         self.lower("gradient")
 
         self.create_text(
-            width // 7.5,
-            height // 20,
+            230,
+            50,
             text="Revision Planner",
             fill="#D6CCFF",
             font=("Arial", 40, "bold"),
