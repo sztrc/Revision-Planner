@@ -4,8 +4,55 @@ import tkinter as tk
 class Example(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-        f1 = GradientFrame(self, borderwidth=1, relief="sunken")
-        f1.pack(side="top", fill="both", expand=True)
+        # Sidebar
+        self.sidebar = tk.Frame(self, bg="#030005", width=100)
+        self.sidebar.pack(side="left", fill="y")
+
+        self.separator = tk.Frame(self, bg="#1D1D1D", width=2)
+        self.separator.pack(side="left", fill="y")
+
+        # Keep sidebar width fixed
+        self.sidebar.pack_propagate(False)
+
+        # Sidebar title
+        tk.Label(
+            self.sidebar,
+            text="Menu",
+            bg="#111111",
+            fg="#E6E6E6",
+            font=("Segoe UI", 16, "bold")
+        ).pack(pady=20)
+
+        # Example buttons
+        tk.Button(
+            self.sidebar,
+            text="Dashboard",
+            bg="#1A1A1A",
+            fg="white",
+            relief="flat"
+        ).pack(fill="x", padx=15, pady=5)
+
+        tk.Button(
+            self.sidebar,
+            text="Subjects",
+            bg="#1A1A1A",
+            fg="white",
+            relief="flat"
+        ).pack(fill="x", padx=15, pady=5)
+
+        tk.Button(
+            self.sidebar,
+            text="Settings",
+            bg="#1A1A1A",
+            fg="white",
+            relief="flat"
+        ).pack(fill="x", padx=15, pady=5)
+
+        # Main content area
+        self.main = GradientFrame(self, borderwidth=0, highlightthickness=0)
+        self.main.pack(side="left", fill="both", expand=True)
+
+
 
 
 class GradientFrame(tk.Canvas):
@@ -43,8 +90,8 @@ class GradientFrame(tk.Canvas):
         self.lower("gradient")
 
         self.create_text(
-            width // 2,
-            height // 8,
+            width // 7.5,
+            height // 20,
             text="Revision Planner",
             fill="#D6CCFF",
             font=("Arial", 40, "bold"),
