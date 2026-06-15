@@ -1,10 +1,11 @@
 import tkinter as tk
+import customtkinter as ctk
 
 class Example(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         # Sidebar
-        self.sidebar = tk.Frame(self, bg="#030005", width=100)
+        self.sidebar = tk.Frame(self, bg="#030005", width=75)
         self.sidebar.pack(side="left", fill="y")
 
         self.divider = tk.Frame(self, bg="#1D1D1D", width=2)
@@ -16,56 +17,67 @@ class Example(tk.Frame):
         # Sidebar title
         tk.Label(
             self.sidebar,
-            text="☰ Menu",
+            text="☰",
             bg="#030005",
             fg="#E6E6E6",
             font=("Segoe UI", 16, "bold")
         ).pack(pady=20)
 
-        tk.Button(
+        #Sidebar Buttons
+        button = ctk.CTkButton(
             self.sidebar,
-            text="📊 Dashboard",
-            font=("Segoe UI Emoji", 9),
-            bg="#1A1A1A",
-            fg="white",
-            relief="flat"
-        ).pack(fill="x", pady=5)
+            text="📊",
+            font=("Segoe UI Emoji", 20),
+            width=50,
+            height=50,
+            corner_radius=12,
+            fg_color="#1A1A1A",
+            hover_color = "#35205E"
+        ).pack(pady=5)
 
-        tk.Button(
+        button = ctk.CTkButton(
             self.sidebar,
-            text="📅 Timetable",
-            font=("Segoe UI Emoji", 9),
-            bg="#1A1A1A",
-            fg="white",
-            relief="flat"
-        ).pack(fill="x", pady=5)
+            text="📅",
+            font=("Segoe UI Emoji", 20),
+            width=50,
+            height=50,
+            corner_radius=12,
+            fg_color="#1A1A1A",
+            hover_color = "#35205E"
+        ).pack(pady=5)
 
-        tk.Button(
+        button = ctk.CTkButton(
             self.sidebar,
-            text="📈 Progress",
-            font=("Segoe UI Emoji", 9),
-            bg="#1A1A1A",
-            fg="white",
-            relief="flat"
-        ).pack(fill="x", pady=5)
+            text="📈",
+            font=("Segoe UI Emoji", 20),
+            width=50,
+            height=50,
+            corner_radius=12,
+            fg_color="#1A1A1A",
+            hover_color = "#35205E"
+        ).pack(pady=5)
 
-        tk.Button(
+        button = ctk.CTkButton(
             self.sidebar,
-            text="🎯 Goals",
-            font=("Segoe UI Emoji", 9),
-            bg="#1A1A1A",
-            fg="white",
-            relief="flat"
-        ).pack(fill="x", pady=5)
+            text="🎯",
+            font=("Segoe UI Emoji", 20),
+            width=50,
+            height=50,
+            corner_radius=12,
+            fg_color="#1A1A1A",
+            hover_color = "#35205E"
+        ).pack(pady=5)
 
-        tk.Button(
+        button = ctk.CTkButton(
             self.sidebar,
-            text="⚙ Settings",
-            font=("Segoe UI Emoji", 9),
-            bg="#1A1A1A",
-            fg="white",
-            relief="flat"
-        ).pack(fill="x", pady=5)
+            text="⚙",
+            font=("Segoe UI Emoji", 20),
+            width=50,
+            height=50,
+            corner_radius=12,
+            fg_color="#1A1A1A",
+            hover_color = "#35205E"
+        ).pack(pady=5)
 
         # Main content area
         self.main = GradientFrame(self, borderwidth=0, highlightthickness=0)
@@ -107,7 +119,7 @@ class GradientFrame(tk.Canvas):
 
         self.create_text(
             230,
-            50,
+            40,
             text="Revision Planner",
             fill="#D6CCFF",
             font=("Arial", 40, "bold"),
