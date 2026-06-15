@@ -213,7 +213,7 @@ class Example(tk.Frame):
             font=("Arial", 15, "bold"),
             dropdown_font=("Arial", 15, "bold"),
             corner_radius=10,
-            values=["Monda", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            values=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
         )
         self.dropdown.place(x=25, y=65)
 
