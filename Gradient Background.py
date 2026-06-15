@@ -83,6 +83,20 @@ class Example(tk.Frame):
         self.main = GradientFrame(self, borderwidth=0, highlightthickness=0)
         self.main.pack(side="left", fill="both", expand=True)
 
+        # 5 dashboard boxes
+        self.cards_frame = ctk.CTkFrame(
+            self.main,
+            fg_color="transparent"
+        )
+
+        # Position below the Dashboard text
+        self.main.create_window(
+            20, 140,
+            anchor="nw",
+            window=self.cards_frame,
+            width=1400
+        )
+
 class GradientFrame(tk.Canvas):
     # A gradient frame which uses a canvas to draw the background
     def __init__(self, parent, color1="#05000A", color2="#010003", **kwargs):
@@ -118,12 +132,24 @@ class GradientFrame(tk.Canvas):
         self.lower("gradient")
 
         self.create_text(
-            230,
+            17,
             40,
             text="Revision Planner",
-            fill="#D6CCFF",
+            anchor="w",
+            fill="white",
             font=("Arial", 40, "bold"),
             tags=("text",)
+        )
+
+        # Dashboard tab UI
+        self.create_text(
+            19,
+            100,
+            text="Dashboard",
+            anchor="w",
+            fill="white",
+            font=("Segoe UI Semibold", 20),
+            tags=("text")
         )
 
 if __name__ == "__main__":
