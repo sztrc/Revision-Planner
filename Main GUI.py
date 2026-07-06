@@ -1,251 +1,230 @@
-import tkinter as tk
+# ---------------- IMPORTS ----------------
+
 import customtkinter as ctk
+from tkinter import messagebox
+from tkinter import ttk
+import csv
+import os
 
-class Example(tk.Frame):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
-        # Sidebar
-        self.sidebar = tk.Frame(self, bg="#030005", width=75)
-        self.sidebar.pack(side="left", fill="y")
+# ---------------- EXTRAS ----------------
 
-        self.divider = tk.Frame(self, bg="#1D1D1D", width=2)
-        self.divider.pack(side="left", fill="y")
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("dark-blue")
 
-        # Keep sidebar width fixed
-        self.sidebar.pack_propagate(False)
+app = ctk.CTk()
+app.title("Revision Planner")
+app.geometry("1100x640")
+app.minsize(540, 295)
 
-# ----------------------------------------------------------------------------------------------------------------------
+# ---------------- DATA ----------------
 
-        # Sidebar title
-        tk.Label(
-            self.sidebar,
-            text="☰",
-            bg="#030005",
-            fg="#E6E6E6",
-            font=("Segoe UI", 16, "bold")
-        ).pack(pady=20)
+days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
-        #Sidebar Buttons
-        button = ctk.CTkButton(
-            self.sidebar,
-            text="📊",
-            font=("Segoe UI Emoji", 20),
-            width=50,
-            height=50,
-            corner_radius=12,
-            fg_color="#1A1A1A",
-            hover_color="#35205E"
-        ).pack(pady=5)
+weeks = ["Week A", "Week B"]
 
-        button = ctk.CTkButton(
-            self.sidebar,
-            text="📅",
-            font=("Segoe UI Emoji", 20),
-            width=50,
-            height=50,
-            corner_radius=12,
-            fg_color="#1A1A1A",
-            hover_color = "#35205E"
-        ).pack(pady=5)
+periods = [
+    "Period 1",
+    "Period 2",
+    "Break",
+    "Period 3",
+    "Period 4",
+    "Lunch",
+    "Period 6",
+    "Period 7"
+]
 
-        button = ctk.CTkButton(
-            self.sidebar,
-            text="📈",
-            font=("Segoe UI Emoji", 20),
-            width=50,
-            height=50,
-            corner_radius=12,
-            fg_color="#1A1A1A",
-            hover_color = "#35205E"
-        ).pack(pady=5)
+period_times = {
+    "Period 1": "08:35 - 09:25",
+    "Period 2": "09:25 - 10:15",
+    "Break": "10:15 - 10:55",
+    "Period 3": "10:55 - 11:45",
+    "Period 4": "11:45 - 12:35",
+    "Lunch": "12:35 - 01:25",
+    "Period 6": "01:25 - 02:15",
+    "Period 7": "02:15 - 03:10"
+}
 
-        button = ctk.CTkButton(
-            self.sidebar,
-            text="🎯",
-            font=("Segoe UI Emoji", 20),
-            width=50,
-            height=50,
-            corner_radius=12,
-            fg_color="#1A1A1A",
-            hover_color = "#35205E"
-        ).pack(pady=5)
+CSV_FILE_WEEK_A = "weeka.csv"
+CSV_FILE_WEEK_B = "weekb.csv"
 
-        button = ctk.CTkButton(
-            self.sidebar,
-            text="⚙",
-            font=("Segoe UI Emoji", 20),
-            width=50,
-            height=50,
-            corner_radius=12,
-            fg_color="#1A1A1A",
-            hover_color = "#35205E"
-        ).pack(pady=5)
+# ---------------- FUNCTIONS ----------------
+def get_csv_file():
+    if week_var.get() == "Week A":
+        return CSV_FILE_WEEK_A
+    else:
+        return CSV_FILE_WEEK_B
 
-# ----------------------------------------------------------------------------------------------------------------------
+def refresh_grid():
+    tree.delete(*tree.get_children())
 
-        self.main = tk.Canvas(
-            self,
-            bg="#05000A",
-            highlightthickness=0,
-            bd=0
-        )
-        self.main.pack(side="left", fill="both", expand=True)
+    for period in periods:
+        time_label = f"{period} ({period_times[period]})"
+        row = [time_label] + [timetable[period][day] for day in days]
+        tree.insert("", "end", values=row)
 
-        container = tk.Frame(self.main, bg="#05000A", bd=0, highlightthickness=0)
+def save_csv():
+    csv_file = get_csv_file()
 
-        self.main.create_window(
-            915, 535,
-            window=container
-        )
+    with open(csv_file, "w", newline="") as file:
+        writer = csv.writer(file)
 
-        row = ctk.CTkFrame(container, fg_color="transparent")
-        row.pack()
+        writer.writerow(["Time"] + days)
 
-        # First Box
-        self.first_box = ctk.CTkFrame(
-            row,
-            width=425,
-            height=325,
-            corner_radius=20,
-            fg_color="#06000F",
-            border_width=2,
-            border_color="#0F0F0F"
-        )
-        self.first_box.pack(side="left", padx=15, pady=15, anchor="w")
+        for period in periods:
+            writer.writerow(
+                [period] +
+                [timetable[period][day] for day in days]
+            )
 
-        title = ctk.CTkLabel(
-            self.first_box,
-            text="Today's Progress",
-            font=("Arial", 25, "bold"),
-            text_color="white"
-        )
-        title.place(x=25,y=20)
+def load_csv():
+    csv_file = get_csv_file()
 
-        # Second Box
-        self.second_box = ctk.CTkFrame(
-            row,
-            width=425,
-            height=325,
-            corner_radius=20,
-            fg_color="#06000F",
-            border_width=2,
-            border_color="#0F0F0F"
-        )
-        self.second_box.pack(side="left", padx=15, pady=15, anchor="w")
+    if not os.path.exists(csv_file):
+        return
 
-        title = ctk.CTkLabel(
-            self.second_box,
-            text="Study Time",
-            font=("Arial", 25, "bold"),
-            text_color="white"
-        )
-        title.place(x=25, y=20)
+    with open(csv_file, "r", newline="") as file:
+        reader = csv.reader(file)
 
-        # Third Box
-        self.third_box = ctk.CTkFrame(
-            row,
-            width=425,
-            height=325,
-            corner_radius=20,
-            fg_color="#06000F",
-            border_width=2,
-            border_color="#0F0F0F"
-        )
-        self.third_box.pack(side="left", padx=15, pady=15, anchor="w")
+        next(reader, None)  # Skip header
 
-        title = ctk.CTkLabel(
-            self.third_box,
-            text="Tasks Completed",
-            font=("Arial", 25, "bold"),
-            text_color="white"
-        )
-        title.place(x=25, y=20)
+        for row in reader:
+            if len(row) < len(days) + 1:
+                continue
 
-        # Fourth Box
-        self.fourth_box = ctk.CTkFrame(
-            row,
-            width=425,
-            height=325,
-            corner_radius=20,
-            fg_color="#06000F",
-            border_width=2,
-            border_color="#0F0F0F"
-        )
-        self.fourth_box.pack(side="left", padx=15, pady=15, anchor="w")
+            period = row[0]
 
-        title = ctk.CTkLabel(
-            self.fourth_box,
-            text="Upcoming",
-            font=("Arial", 25, "bold"),
-            text_color="white"
-        )
-        title.place(x=25, y=20)
+            if period in timetable:
+                for i, day in enumerate(days):
+                    timetable[period][day] = row[i + 1]
 
-        row2 = ctk.CTkFrame(container, fg_color="transparent")
-        row2.pack()
 
-        # Fifth Box
-        self.fifth_box = ctk.CTkFrame(
-            row2,
-            width=750,
-            height=540,
-            corner_radius=20,
-            fg_color="#06000F",
-            border_width=2,
-            border_color="#0F0F0F"
-        )
-        self.fifth_box.pack(side="left", padx=15, pady=15, anchor="w")
+def save_entry():
+    day = day_var.get()
+    period = time_var.get()
+    subject = subject_entry.get().strip()
 
-        title = ctk.CTkLabel(
-            self.fifth_box,
-            text="Today's Schedule",
-            font=("Arial", 25, "bold"),
-            text_color="white"
-        )
-        title.place(x=25, y=20)
+    if not subject:
+        messagebox.showerror("Error", "Enter a subject")
+        return
 
-        self.dropdown = ctk.CTkOptionMenu(
-            self.fifth_box,
-            fg_color="#0D0021",
-            dropdown_fg_color="#0D0021",
-            dropdown_hover_color="#12002E",
-            button_color="#0D0021",
-            font=("Arial", 15, "bold"),
-            dropdown_font=("Arial", 15, "bold"),
-            corner_radius=10,
-            values=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        )
-        self.dropdown.place(x=25, y=65)
+    timetable[period][day] = subject
 
-        # Sixth Box
-        self.sixth_box = ctk.CTkFrame(
-            row2,
-            width=1010,
-            height=540,
-            corner_radius=20,
-            fg_color="#06000F",
-            border_width=2,
-            border_color="#0F0F0F"
-        )
-        self.sixth_box.pack(side="left", padx=15, pady=15, anchor="w")
+    save_csv()
+    refresh_grid()
 
-        title = ctk.CTkLabel(
-            self.sixth_box,
-            text="Subjects Overview",
-            font=("Arial", 25, "bold"),
-            text_color="white"
-        )
-        title.place(x=25, y=20)
+    subject_entry.delete(0, "end")
 
-        container = tk.Frame(self.main, bg="#05000A", bd=0, highlightthickness=0)
+def delete_entry():
+    day = day_var.get()
+    period = time_var.get()
 
-# ----------------------------------------------------------------------------------------------------------------------
+    timetable[period][day] = ""
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Revision Tracker")
-    root.state("zoomed")
-    root.geometry("1920x1080")
-    root.minsize(960, 540)
-    Example(root).pack(fill="both", expand=True)
-    root.mainloop()
+    save_csv()
+    refresh_grid()
+
+def change_week(choice):
+    for period in periods:
+        for day in days:
+            timetable[period][day] = ""
+
+    load_csv()
+    refresh_grid()
+
+# ---------------- INPUTS ----------------
+
+controls = ctk.CTkFrame(app)
+controls.pack(fill="x", padx=20, pady=10)
+controls.grid_columnconfigure(4, weight=1)
+
+ctk.CTkLabel(controls, text="Week").grid(row=0, column=0, padx=5)
+week_var = ctk.StringVar(value=weeks[0])
+ctk.CTkOptionMenu(
+    controls,
+    values=weeks,
+    variable=week_var,
+    command=change_week
+).grid(row=1, column=0, padx=5)
+
+ctk.CTkLabel(controls, text="Day").grid(row=0, column=1, padx=5)
+day_var = ctk.StringVar(value=days[0])
+ctk.CTkOptionMenu(controls, values=days, variable=day_var).grid(row=1, column=1, padx=5)
+
+ctk.CTkLabel(controls, text="Time Slot").grid(row=0, column=2, padx=5)
+time_var = ctk.StringVar(value=periods[0])
+ctk.CTkOptionMenu(controls, values=periods, variable=time_var).grid(row=1, column=2, padx=5)
+
+ctk.CTkLabel(controls, text="Subject").grid(row=0, column=3, padx=5)
+subject_entry = ctk.CTkEntry(controls, width=180)
+subject_entry.grid(row=1, column=3, padx=5)
+
+ctk.CTkButton(controls, text="Add", command=save_entry).grid(row=1, column=4, padx=10, sticky="e")
+
+# ---------------- GRID STORAGE ----------------
+timetable = {t: {d: "" for d in days} for t in periods}
+
+# ---------------- TABLE ----------------
+frame = ctk.CTkFrame(app)
+frame.pack(fill="x", expand=False, pady=20)
+
+tree = ttk.Treeview(
+    frame,
+    columns=["Time"] + days,
+    show="headings",
+    height=len(periods)
+)
+
+tree.heading("Time", text="Time")
+tree.column("Time", width=220, minwidth=235, anchor="w")
+
+for d in days:
+    tree.heading(d, text=d)
+    tree.column(d, width=180, minwidth=195, anchor="center")
+
+tree.pack(fill="both", expand=True)
+
+style = ttk.Style()
+style.theme_use("default")
+
+style.configure(
+    "Treeview",
+    background="#1e1e1e",
+    foreground="white",
+    fieldbackground="#1e1e1e",
+    rowheight=40,
+    borderwidth=0,
+    font=("Arial", 13, "bold")
+)
+
+style.configure(
+    "Treeview.Heading",
+    background="#1f6aa5",
+    font=("Arial", 14, "bold"),
+    relief="flat",
+)
+
+style.map(
+    "Treeview",
+    background=[("selected", "#144870")],
+    foreground=[("selected", "white")]
+)
+
+# ---------------- BUTTONS ----------------
+
+ctk.CTkButton(
+    app,
+    text="Add to Timetable",
+    command=save_entry
+).pack(pady=10)
+
+ctk.CTkButton(
+    app,
+    text="Save CSV",
+    command=save_csv
+).pack()
+
+# ---------------- MAIN ----------------
+load_csv()
+refresh_grid()
+
+app.mainloop()
