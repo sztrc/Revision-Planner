@@ -1,9 +1,9 @@
-Time,Monday,Tuesday,Wednesday,Thursday,Friday
-Period 1,,,,,
-Period 2,,,,,
-Break,Academic,Academic,House,Academic,Academic
-Period 3,,,,,
-Period 4,,,,,
-Lunch,,,,,
-Period 6,,,,,
-Period 7,,,,,
+Period,Time,Monday,Tuesday,Wednesday,Thursday,Friday
+Period 1,08:35 - 09:25,Maths,,,Physics,Business Studies
+Period 2,09:25 - 10:15,,English Lang,Computer Science,Computer Science,
+Break,10:15 - 10:55,Academic,Academic,House,Academic,Academic
+Period 3,10:55 - 11:45,Physics,,Japanese,Business Studies,Maths
+Period 4,11:45 - 12:35,Computer Science,Computer Science,Physics,Japanese,English Lang
+Lunch,12:35 - 01:25,Japanese,Lunch,Lunch,Lunch,Lunch
+Period 6,01:25 - 02:15,Maths,Physics,,Maths,Physics
+Period 7,02:15 - 03:10,,Maths,,Business Studies,Computer Science
