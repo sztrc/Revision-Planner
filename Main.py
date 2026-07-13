@@ -18,7 +18,7 @@ app.minsize(540, 295)
 
 # ---------------- DATA ----------------
 
-days = ["Monday", "Tuesay", "Wednesday", "Thursday", "Friday"]
+days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
 weeks = ["Week A", "Week B"]
 
