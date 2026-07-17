@@ -2,9 +2,9 @@
 
 import customtkinter as ctk
 from tkinter import messagebox
-from tkinter import ttk
 import csv
 import os
+import random
 
 # ---------------- EXTRAS ----------------
 
@@ -49,6 +49,8 @@ period_times_week_b = {
 
 CSV_FILE_WEEK_A = "weeka.csv"
 CSV_FILE_WEEK_B = "weekb.csv"
+
+excluded_subjects = ["house", "academic", "lunch"]
 
 # ---------------- TIMETABLE ----------------
 timetable_week_a = {}
@@ -95,7 +97,7 @@ def get_next_slot_number():
 
     for period in active_periods:
         if period.startswith("Slot "):
-            number_part = period[5:]  # everything after "Slot "
+            number_part = period[5:]
 
             if number_part.isdigit():
                 number = int(number_part)
@@ -104,32 +106,103 @@ def get_next_slot_number():
 
     return highest_number + 1
 
+def get_all_subjects():
+    subjects = []
+
+    for timetable in [timetable_week_a, timetable_week_b]:
+        for period in timetable:
+            for day in days:
+                subject = timetable[period][day].strip()
+
+                if subject and not subject.startswith("Revision:"):
+                    if subject.lower() not in excluded_subjects:
+                        if subject not in subjects:
+                            subjects.append(subject)
+
+    return subjects
+
+def randomise_revision():
+    subjects = get_all_subjects()
+
+    if not subjects:
+        messagebox.showerror("Error", "Add some subjects first.")
+        return
+
+    timetable = get_timetable()
+
+    for period in get_periods():
+        for day in days:
+
+            if timetable[period][day] == "":
+                timetable[period][day] = "Revision: " + random.choice(subjects)
+
+            elif timetable[period][day].startswith("Revision:"):
+                timetable[period][day] = "Revision: " + random.choice(subjects)
+
+    save_csv()
+    refresh_grid()
+
 def refresh_grid():
-    tree.delete(*tree.get_children())
+    for widget in grid_frame.winfo_children():
+        widget.destroy()
 
     active_periods = get_periods()
     active_period_times = get_period_times()
     active_timetable = get_timetable()
 
-    tree["height"] = len(active_periods)
+    header_time = ctk.CTkLabel(
+        grid_frame, text="Time", fg_color="#1f6aa5",
+        text_color="white", font=("Arial", 14, "bold"),
+        width=220, height=40, corner_radius=0
+    )
+    header_time.grid(row=0, column=0, sticky="nsew", padx=(0, 1), pady=(0, 1))
 
+    day_column = 1
+    for day in days:
+        header_day = ctk.CTkLabel(
+            grid_frame, text=day, fg_color="#1f6aa5",
+            text_color="white", font=("Arial", 14, "bold"),
+            width=180, height=40, corner_radius=0
+        )
+        header_day.grid(row=0, column=day_column, sticky="nsew", padx=(0, 1), pady=(0, 1))
+        day_column = day_column + 1
+
+    row_number = 1
     for period in active_periods:
         time = active_period_times.get(period, "")
 
         if time:
-            time_label = f"{period} ({time})"
+            time_text = f"{period} ({time})"
         else:
-            time_label = period
+            time_text = period
 
-        row = [time_label]
+        time_cell = ctk.CTkLabel(
+            grid_frame, text=time_text, fg_color="#1e1e1e",
+            text_color="white", font=("Arial", 13, "bold"),
+            width=220, height=40, corner_radius=0, anchor="w", padx=10
+        )
+        time_cell.grid(row=row_number, column=0, sticky="nsew", padx=(0, 1), pady=(0, 1))
+
+        day_column = 1
         for day in days:
-            row.append(active_timetable[period][day])
+            subject = active_timetable[period][day]
 
-        tree.insert("", "end", values=row)
+            if subject.startswith("Revision:"):
+                text_color = "red"
+            else:
+                text_color = "white"
+
+            subject_cell = ctk.CTkLabel(
+                grid_frame, text=subject, fg_color="#1e1e1e",
+                text_color=text_color, font=("Arial", 13, "bold"),
+                width=180, height=40, corner_radius=0
+            )
+            subject_cell.grid(row=row_number, column=day_column, sticky="nsew", padx=(0, 1), pady=(0, 1))
+            day_column = day_column + 1
+
+        row_number = row_number + 1
 
 def refresh_time_dropdown():
-    # Keeps the "Time Slot" dropdown showing only the rows of the
-    # currently selected week.
 
     active_periods = get_periods()
 
@@ -176,7 +249,7 @@ def load_csv_for_week(week_name):
     with open(csv_file, "r", newline="") as file:
         reader = csv.reader(file)
 
-        next(reader, None)  # Skip header row
+        next(reader, None)
 
         for row in reader:
             if len(row) < len(days) + 2:
@@ -320,31 +393,9 @@ ctk.CTkButton(controls, text="Add", command=save_entry).grid(row=1, column=4, pa
 
 frame = ctk.CTkFrame(app)
 frame.pack(fill="x", expand=False, pady=20)
-frame.grid_columnconfigure(4, weight=1)
 
-tree_columns = ["Time"]
-for day in days:
-    tree_columns.append(day)
-
-tree = ttk.Treeview(frame, columns=tree_columns, show="headings", height=len(periods_week_a))
-
-tree.heading("Time", text="Time")
-tree.column("Time", width=220, minwidth=235, anchor="w")
-
-for day in days:
-    tree.heading(day, text=day)
-    tree.column(day, width=180, minwidth=195, anchor="center")
-
-tree.pack(fill="both", expand=True)
-
-style = ttk.Style()
-style.theme_use("default")
-
-style.configure("Treeview", background="#1e1e1e", foreground="white", fieldbackground="#1e1e1e", rowheight=40, borderwidth=0, font=("Arial", 13, "bold"))
-
-style.configure("Treeview.Heading", background="#1f6aa5", font=("Arial", 14, "bold"), relief="flat")
-
-style.map("Treeview", background=[("selected", "#144870")], foreground=[("selected", "white")])
+grid_frame = ctk.CTkFrame(frame, fg_color="#1e1e1e")
+grid_frame.pack(fill="both", expand=True, padx=1, pady=1)
 
 # ---------------- BUTTONS ----------------
 
@@ -365,6 +416,8 @@ time_slot_entry.grid(row=1, column=0, padx=10)
 
 ctk.CTkButton(inner, text="Add a New Row", command=add_new_time_row).grid(row=1, column=1, padx=10)
 ctk.CTkButton(inner, text="Delete Selected Row", fg_color="#a53d3d", hover_color="#7a2c2c", command=delete_time_row).grid(row=1, column=2, padx=10)
+
+ctk.CTkButton(inner, text="Randomise Revision", command=randomise_revision).grid(row=1, column=3, padx=(30, 10), sticky="e")
 
 # ---------------- MAIN ----------------
 
